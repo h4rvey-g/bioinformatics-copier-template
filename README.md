@@ -1,5 +1,7 @@
 # bioinformatics-copier-template
 
+[![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/copier-org/copier)
+
 Copier template for bootstrapping a bioinformatics analysis project with:
 
 - [Pixi](https://pixi.sh/) for environment and task management
