@@ -20,7 +20,7 @@ This plan has been refined using official Copier, Pixi, Nextflow, Bioconda, and 
 - Use Copier's **advanced question format** for validation and better UX (`type`, `help`, `choices`, `default`, `validator`, `placeholder`, `when`).
 - Use a **Copier context hook** via `copier_templates_extensions.TemplateExtensionLoader` to auto-detect host platform details that are not available from prompts alone, especially CPU architecture for Pixi platform defaults.
 - Generate and keep `{{ _copier_conf.answers_file }}` in the rendered project so future Copier updates remain possible.
-- Avoid post-copy `_tasks` in v1 unless truly necessary; they add trust/execution complexity and are not needed for a clean starter template.
+- Use a minimal post-copy `_tasks` entry to run `git init` so rendered projects are repositories immediately after generation.
 
 ### Pixi
 - Use `pixi.toml` with `[workspace]`, `[dependencies]`, and `[tasks]`.
@@ -279,8 +279,9 @@ Do not rely only on `_copier_conf.os`, because it does not give enough detail to
 - `nextflow`
 
 ### Likely useful lightweight dependencies
-- `git`
 - `python` (only if helper scripts or docs tooling need it)
+
+Note: do not add `git` to the base Pixi environment just to support repository initialization; the template's Copier task can rely on the system `git` command.
 
 ### Important note
 Do **not** add a large set of bioinformatics tools to the base environment in v1.
@@ -299,13 +300,15 @@ Use tasks to standardize workflow commands.
 Recommended v1 tasks:
 
 - `run`
-  - `nextflow run . -profile {{ 'slurm' if has_slurm else 'local' }}`
+  - `nextflow run . -profile {{ 'slurm' if has_slurm else 'local' }}{% if has_slurm %} -resume{% endif %}`
 - `config`
   - `nextflow config . -profile {{ 'slurm' if has_slurm else 'local' }} -flat`
 - `lint`
   - `nextflow lint .`
 - `clean`
   - remove `work/`, `.nextflow*`, and generated reports/results as appropriate
+
+For Slurm renders, enable `cache = 'lenient'` as the default process cache mode to make `-resume` less sensitive to shared filesystem timestamp inconsistencies.
 
 Optional later:
 - explicit `run-slurm` / `run-local` aliases if a team wants them
@@ -531,7 +534,13 @@ Generated output should be ready for `git init` and first commit.
 - `.editorconfig`
 - `.gitattributes` later if syntax highlighting or line-ending normalization becomes useful
 
-## README instructions should explicitly tell users to run
+## README instructions should explicitly tell users the generated project is auto-initialized with Git, and to run
+```bash
+git add .
+git commit -m "Initial commit from Copier template"
+```
+
+If Copier is invoked with `--skip-tasks`, users should instead run:
 ```bash
 git init
 git add .
@@ -550,7 +559,7 @@ Must define:
 - all user prompts
 - validators for slug/resource fields
 
-Should not rely on post-copy tasks in v1.
+Should define a minimal post-copy `_tasks` entry for `git init`.
 
 ### `template/pixi.toml.jinja`
 Must define:
@@ -729,7 +738,7 @@ At minimum, for `has_slurm=true` renders:
 4. If generated with `has_slurm=false`, the project runs locally with `pixi run run`.
 5. If generated with `has_slurm=true`, the project exposes a Slurm profile via `-profile slurm` and corresponding Pixi tasks.
 6. The generated project includes reusable resource labels `process_low`, `process_medium`, `process_high`, and `process_gpu`.
-7. The generated project is immediately ready for `git init` and first commit.
+7. The generated project is automatically initialized as a Git repository and immediately ready for first commit.
 8. The generated project keeps `.copier-answers.yml` so template updates remain possible.
 
 ---

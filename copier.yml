@@ -4,6 +4,8 @@ _answers_file: .copier-answers.yml
 _jinja_extensions:
   - copier_templates_extensions.TemplateExtensionLoader
   - extensions/context.py:PlatformContext
+_tasks:
+  - git init
 
 project_name:
   type: str

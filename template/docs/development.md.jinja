@@ -9,6 +9,8 @@ pixi run lint
 pixi run run
 ```
 
+{% if has_slurm %}`pixi run run` expands to `nextflow run . -profile slurm -resume`, and the generated config enables lenient process caching for HPC-friendly resume behavior.
+{% endif %}
 ## Template-specific note
 
 This project was generated from a Copier template that uses a local context hook.

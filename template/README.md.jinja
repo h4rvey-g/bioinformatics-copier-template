@@ -40,6 +40,8 @@ This project was generated from a Copier template and provides a Pixi-managed Ne
    pixi run run
    ```
 
+   {% if has_slurm %}The generated `run` task uses `nextflow run . -profile slurm -resume` and enables lenient process caching for better resume behavior on shared HPC filesystems.
+   {% endif %}
 ## Execution target
 
 This project was rendered for the **{{ 'Slurm' if has_slurm else 'local' }}** executor.
@@ -49,6 +51,8 @@ This project was rendered for the **{{ 'Slurm' if has_slurm else 'local' }}** ex
 
 - Launch from a node where `sbatch` is available.
 - Shared filesystem paths are visible to compute nodes.
+- The default `pixi run run` command includes `-resume`.
+- Lenient process caching is enabled to make resume behavior more tolerant of shared filesystem timestamp quirks.
 - Adjust partition/account/GPU flags for your cluster if needed.
 {% else -%}
 ### Local execution notes
@@ -74,10 +78,12 @@ This project was rendered for the **{{ 'Slurm' if has_slurm else 'local' }}** ex
 
 ## Git bootstrap
 
+This scaffold is automatically initialized as a Git repository during `copier copy`.
+If you rendered it with `--skip-tasks`, initialize Git manually before the first commit.
+
 After `pixi install`, commit the generated scaffold together with `pixi.lock` and `{{ _copier_conf.answers_file }}`.
 
 ```bash
-git init
 git add .
 git commit -m "Initial commit from Copier template"
 ```

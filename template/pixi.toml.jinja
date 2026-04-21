@@ -9,10 +9,9 @@ requires-pixi = ">=0.46.0"
 
 [dependencies]
 nextflow = "*"
-git = "*"
 
 [tasks]
-run = "nextflow run . -profile {{ 'slurm' if has_slurm else 'local' }}"
+run = "nextflow run . -profile {{ 'slurm' if has_slurm else 'local' }}{% if has_slurm %} -resume{% endif %}"
 config = "nextflow config . -profile {{ 'slurm' if has_slurm else 'local' }} -flat"
 lint = "nextflow lint ."
 clean = "rm -rf work .nextflow .nextflow*"

@@ -6,13 +6,16 @@ Copier template for bootstrapping a bioinformatics analysis project with:
 - [Nextflow DSL2](https://www.nextflow.io/) for workflow orchestration
 - generation-time executor selection: **local** or **Slurm**
 - a Git-friendly starter layout with updateable Copier answers
+- automatic `git init` during `copier copy`
 
 ## How to use
 
-This template uses a local Copier context hook via `copier_templates_extensions`, so you must:
+This template uses a local Copier context hook via `copier_templates_extensions` and a post-copy task to initialize Git, so you must:
 
 - run Copier with `--trust`
 - have `copier-templates-extensions` installed alongside Copier
+
+By default, a generated project is automatically initialized as a Git repository during `copier copy`. If you want to skip that behavior, pass `--skip-tasks`.
 
 ### Option 1: one-shot usage with `uvx` (recommended)
 
@@ -42,6 +45,7 @@ uvx --with copier-templates-extensions --from copier copier copy --trust \
   https://github.com/h4rvey-g/bioinformatics-copier-template.git \
   my-analysis
 cd my-analysis
+git status
 pixi install
 pixi run config
 pixi run lint
@@ -60,6 +64,14 @@ uvx --with copier-templates-extensions --from copier copier copy --trust \
   -d slurm_account=my-lab
 ```
 
+For Slurm renders, the generated `pixi run run` task uses:
+
+```bash
+nextflow run . -profile slurm -resume
+```
+
+and the generated Nextflow config enables lenient process caching, which is a safer default on shared HPC filesystems.
+
 ## Generated project highlights
 
 A rendered project includes:
@@ -73,6 +85,8 @@ A rendered project includes:
 - `.copier-answers.yml`
 
 The starter workflow reads `assets/samplesheet.csv` and writes small summary files into `results/` for smoke testing.
+
+The rendered destination is also auto-initialized as a Git repository unless Copier is run with `--skip-tasks`.
 
 ## Notes for template development
 

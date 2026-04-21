@@ -1,5 +1,9 @@
 process {
   errorStrategy = 'terminate'
+{% if has_slurm %}
+  // Lenient caching is a better default on shared HPC filesystems when using -resume.
+  cache = 'lenient'
+{% endif %}
 
   // Resource labels are intentionally modest defaults for a starter template.
   withLabel: 'process_low' {
