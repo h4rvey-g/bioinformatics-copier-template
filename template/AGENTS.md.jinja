@@ -1,0 +1,28 @@
+# AGENTS.md
+
+## Environment and package management
+
+- Use `pixi run` to run project commands.
+- Use `pixi add` to add packages to the project environment.
+- Prefer commands such as `pixi run python ...`, `pixi run bash ...`, or project tasks like `pixi run run`.
+
+## Execution policy
+
+{% if has_slurm %}- This project was initialized for **Slurm** execution.
+- When running task scripts or one-off compute jobs, use `srun` and then invoke the command through `pixi run`.
+- Do **not** wrap `nextflow run ... -profile slurm` in `srun`. Use `pixi run run` (or `pixi run nextflow run . -profile slurm -resume`) directly so Nextflow can submit jobs to Slurm itself.
+- Example for a one-off script:
+
+  ```bash
+  srun -A {{ slurm_account }} -n 1 -N 1 pixi run python scripts/build_hit_package.py
+  ```
+
+- **NEVER RUN TASKS ON THE LOGIN NODE.**
+- If your site requires additional Slurm flags such as `-p {{ slurm_partition }}`, time, memory, or QoS settings, include them in the `srun` command.
+{% else %}- This project was initialized for **local** execution.
+- Run commands through `pixi run`, for example:
+
+  ```bash
+  pixi run python scripts/build_hit_package.py
+  ```
+{% endif %}

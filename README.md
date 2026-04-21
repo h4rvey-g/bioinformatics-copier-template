@@ -84,6 +84,7 @@ A rendered project includes:
 - `conf/modules.config`
 - exactly one executor config: `conf/local.config` or `conf/slurm.config`
 - `.copier-answers.yml`
+- `AGENTS.md`
 
 The starter workflow reads `assets/samplesheet.csv` and writes small summary files into `results/` for smoke testing.
 
