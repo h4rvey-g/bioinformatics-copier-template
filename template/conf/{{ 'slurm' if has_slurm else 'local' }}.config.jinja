@@ -7,8 +7,12 @@ process {
 {% if slurm_gpu_partition %}
     queue = '{{ slurm_gpu_partition }}'
 {% endif %}
+{% if slurm_gpu_gres %}
+    clusterOptions = '--gres={{ slurm_gpu_gres }}'
+{% else %}
     // Cluster-specific GPU request syntax often needs local adjustment.
     // clusterOptions = '--gres=gpu:1'
+{% endif %}
   }
 {% else %}
   executor = 'local'

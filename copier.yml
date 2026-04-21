@@ -57,27 +57,101 @@ has_slurm:
   help: Configure the generated project for Slurm execution?
   default: false
 
-slurm_partition:
+slurm_partition_choice:
   type: str
   when: "{{ has_slurm }}"
-  help: Default Slurm partition/queue for standard jobs.
+  help: >-
+    Default Slurm partition/queue for standard jobs.
+    {% if detected_sinfo_available %}
+    Choose from partitions detected via `sinfo`.
+    {% else %}
+    `sinfo` was not available; choose a common placeholder or enter one manually.
+    {% endif %}
+  choices: |-
+    {{ detected_slurm_partition_choices | to_nice_yaml | indent(2, true) }}
+  default: "{{ detected_default_slurm_partition }}"
+
+slurm_partition_manual:
+  type: str
+  when: "{{ has_slurm and slurm_partition_choice == '__manual__' }}"
+  help: Enter the default Slurm partition/queue manually.
   placeholder: compute
-  default: compute
+  default: ""
   validator: >-
-    {% if has_slurm and not (slurm_partition | regex_search('^[A-Za-z0-9._-]+$')) %}
+    {% if has_slurm and slurm_partition_choice == '__manual__' and not (slurm_partition_manual | trim) %}
+    Enter a Slurm partition name.
+    {% elif has_slurm and slurm_partition_manual and not (slurm_partition_manual | regex_search('^[A-Za-z0-9._-]+$')) %}
     Slurm partition must contain only letters, digits, dots, underscores, or hyphens.
+    {% endif %}
+
+slurm_partition:
+  type: str
+  when: false
+  default: "{{ slurm_partition_manual if slurm_partition_choice == '__manual__' else slurm_partition_choice }}"
+
+slurm_gpu_partition_choice:
+  type: str
+  when: "{{ has_slurm }}"
+  help: >-
+    Optional dedicated GPU partition for `process_gpu` jobs.
+    {% if detected_slurm_gpu_partitions %}
+    Choose from GPU-capable partitions detected via `sinfo`, or leave this unset to reuse the default partition.
+    {% elif detected_sinfo_available %}
+    No GPU-capable partitions were detected from `sinfo`; leave this unset to reuse the default partition, or enter one manually.
+    {% else %}
+    `sinfo` was not available; leave this unset to reuse the default partition, or enter one manually.
+    {% endif %}
+  choices: |-
+    {{ detected_slurm_gpu_partition_choices | to_nice_yaml | indent(2, true) }}
+  default: ""
+
+slurm_gpu_partition_manual:
+  type: str
+  when: "{{ has_slurm and slurm_gpu_partition_choice == '__manual__' }}"
+  help: Enter the dedicated GPU partition manually, or leave blank to reuse the default partition.
+  placeholder: gpu
+  default: ""
+  validator: >-
+    {% if has_slurm and slurm_gpu_partition_manual and not (slurm_gpu_partition_manual | regex_search('^[A-Za-z0-9._-]+$')) %}
+    GPU partition must contain only letters, digits, dots, underscores, or hyphens.
     {% endif %}
 
 slurm_gpu_partition:
   type: str
+  when: false
+  default: "{{ slurm_gpu_partition_manual if slurm_gpu_partition_choice == '__manual__' else slurm_gpu_partition_choice }}"
+
+slurm_gpu_gres_choice:
+  type: str
   when: "{{ has_slurm }}"
-  help: Optional dedicated GPU partition for `process_gpu` jobs.
-  placeholder: gpu
+  help: >-
+    GPU `--gres` request for `process_gpu` jobs.
+    {% if detected_sinfo_available %}
+    Choose from GPU resources detected for `{{ slurm_gpu_partition if slurm_gpu_partition else slurm_partition }}` when available, or pick a manual entry.
+    {% else %}
+    `sinfo` was not available; choose a generic request or enter one manually.
+    {% endif %}
+  choices: |-
+    {{ detected_slurm_gpu_gres_choices_by_partition.get(slurm_gpu_partition if slurm_gpu_partition else slurm_partition, detected_slurm_gpu_gres_choices) | to_nice_yaml | indent(2, true) }}
+  default: ""
+
+slurm_gpu_gres_manual:
+  type: str
+  when: "{{ has_slurm and slurm_gpu_gres_choice == '__manual__' }}"
+  help: Enter the value to place after `--gres=` for `process_gpu` jobs.
+  placeholder: gpu:1
   default: ""
   validator: >-
-    {% if has_slurm and slurm_gpu_partition and not (slurm_gpu_partition | regex_search('^[A-Za-z0-9._-]+$')) %}
-    GPU partition must contain only letters, digits, dots, underscores, or hyphens.
+    {% if has_slurm and slurm_gpu_gres_choice == '__manual__' and not (slurm_gpu_gres_manual | trim) %}
+    Enter a GPU `--gres` value such as `gpu:1`.
+    {% elif has_slurm and slurm_gpu_gres_manual and not (slurm_gpu_gres_manual | regex_search('^[A-Za-z0-9._:-]+$')) %}
+    `--gres` must contain only letters, digits, dots, underscores, colons, or hyphens.
     {% endif %}
+
+slurm_gpu_gres:
+  type: str
+  when: false
+  default: "{{ slurm_gpu_gres_manual if slurm_gpu_gres_choice == '__manual__' else slurm_gpu_gres_choice }}"
 
 slurm_account:
   type: str

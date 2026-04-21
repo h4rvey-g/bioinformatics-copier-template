@@ -1,2 +1,60 @@
 # Changes here may be overwritten by Copier.
-{{ _copier_answers | to_nice_yaml }}
+{%- if has_slurm %}
+{%- set selected_gpu_partition = slurm_gpu_partition if slurm_gpu_partition else slurm_partition %}
+{%- set detected_gres_values_for_partition = detected_slurm_gpu_gres_values_by_partition.get(selected_gpu_partition, detected_slurm_gpu_gres_values) %}
+{%- set resolved_slurm_partition_choice = (
+  '__manual__'
+  if slurm_partition_choice == '__manual__'
+  else slurm_partition_choice
+  if slurm_partition == slurm_partition_choice
+  else slurm_partition
+  if slurm_partition in detected_slurm_partition_values
+  else '__manual__'
+) %}
+{%- set resolved_slurm_partition_manual = slurm_partition if resolved_slurm_partition_choice == '__manual__' else '' %}
+{%- set resolved_slurm_gpu_partition_choice = (
+  '__manual__'
+  if slurm_gpu_partition_choice == '__manual__'
+  else ''
+  if not slurm_gpu_partition
+  else slurm_gpu_partition_choice
+  if slurm_gpu_partition == slurm_gpu_partition_choice
+  else slurm_gpu_partition
+  if slurm_gpu_partition in detected_slurm_gpu_partition_values
+  else '__manual__'
+) %}
+{%- set resolved_slurm_gpu_partition_manual = slurm_gpu_partition if resolved_slurm_gpu_partition_choice == '__manual__' else '' %}
+{%- set resolved_slurm_gpu_gres_choice = (
+  '__manual__'
+  if slurm_gpu_gres_choice == '__manual__'
+  else ''
+  if not slurm_gpu_gres
+  else slurm_gpu_gres_choice
+  if slurm_gpu_gres == slurm_gpu_gres_choice
+  else slurm_gpu_gres
+  if slurm_gpu_gres in detected_gres_values_for_partition
+  else '__manual__'
+) %}
+{%- set resolved_slurm_gpu_gres_manual = slurm_gpu_gres if resolved_slurm_gpu_gres_choice == '__manual__' else '' %}
+{%- endif %}
+{{
+  (
+    _copier_answers
+    | combine(
+        {
+          'slurm_partition': slurm_partition,
+          'slurm_partition_choice': resolved_slurm_partition_choice,
+          'slurm_partition_manual': resolved_slurm_partition_manual,
+          'slurm_gpu_partition': slurm_gpu_partition,
+          'slurm_gpu_partition_choice': resolved_slurm_gpu_partition_choice,
+          'slurm_gpu_partition_manual': resolved_slurm_gpu_partition_manual,
+          'slurm_gpu_gres': slurm_gpu_gres,
+          'slurm_gpu_gres_choice': resolved_slurm_gpu_gres_choice,
+          'slurm_gpu_gres_manual': resolved_slurm_gpu_gres_manual,
+        }
+        if has_slurm
+        else {}
+      )
+  )
+  | to_nice_yaml
+}}

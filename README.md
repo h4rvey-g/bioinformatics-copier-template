@@ -58,13 +58,25 @@ pixi run run
 
 By default, `Primary author or team name` and `Slurm account/project for billing` are prefilled from the current username.
 
+When `sinfo` is available on the machine running `copier copy`, the template now detects available Slurm partitions and GPU resources and lets the user select them interactively.
+
+```bash
+uvx --with copier-templates-extensions --from copier copier copy --trust \
+  https://github.com/h4rvey-g/bioinformatics-copier-template.git \
+  my-analysis \
+  -d has_slurm=true
+```
+
+You can still drive Slurm answers non-interactively if needed:
+
 ```bash
 uvx --with copier-templates-extensions --from copier copier copy --trust \
   https://github.com/h4rvey-g/bioinformatics-copier-template.git \
   my-analysis \
   -d has_slurm=true \
   -d slurm_partition=compute \
-  -d slurm_gpu_partition=gpu
+  -d slurm_gpu_partition=gpu \
+  -d slurm_gpu_gres=gpu:1
 ```
 
 For Slurm renders, the generated `pixi run run` task uses:
@@ -74,6 +86,8 @@ nextflow run . -profile slurm -resume
 ```
 
 and the generated Nextflow config enables lenient process caching, which is a safer default on shared HPC filesystems.
+
+If a GPU `--gres` value is selected during generation, the rendered `conf/slurm.config` will set `clusterOptions = '--gres=...'` for `process_gpu` jobs.
 
 ## Generated project highlights
 
