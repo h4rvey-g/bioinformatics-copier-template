@@ -11,7 +11,7 @@ project_name:
   type: str
   help: Human-readable project name.
   placeholder: RNA-seq differential expression
-  default: Bioinformatics Analysis
+  default: ""
   validator: >-
     {% if not project_name | trim %}
     Project name cannot be empty.
