@@ -1,0 +1,26 @@
+process {
+  errorStrategy = 'terminate'
+
+  // Resource labels are intentionally modest defaults for a starter template.
+  withLabel: 'process_low' {
+    cpus = 2
+  }
+
+  withLabel: 'process_medium' {
+    cpus = 4
+  }
+
+  withLabel: 'process_high' {
+    cpus = 8
+  }
+
+  withLabel: 'process_gpu' {
+    cpus = 8
+  }
+}
+
+// Nextflow runtime working directory.
+workDir = 'work'
+
+// Keep bulky inputs and derived files outside Git-tracked report paths.
+// Lightweight reviewable artifacts should be published into params.outdir.

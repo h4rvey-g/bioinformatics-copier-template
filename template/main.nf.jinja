@@ -1,0 +1,31 @@
+#!/usr/bin/env nextflow
+
+process SAMPLE_SUMMARY {
+    label 'process_low'
+    tag "${sample_id}"
+    publishDir params.outdir, mode: 'copy'
+
+    input:
+    tuple val(sample_id), path(input_file)
+
+    output:
+    path "${sample_id}.summary.txt"
+
+    script:
+    """
+    cat <<EOF > ${sample_id}.summary.txt
+    sample_id=${sample_id}
+    input_file=${input_file}
+    input_name=\$(basename ${input_file})
+    EOF
+    """
+}
+
+workflow {
+    samples = channel
+        .fromPath(params.input, checkIfExists: true)
+        .splitCsv(header: true)
+        .map { row -> tuple(row.sample_id as String, file(row.input_path as String, checkIfExists: true)) }
+
+    SAMPLE_SUMMARY(samples)
+}

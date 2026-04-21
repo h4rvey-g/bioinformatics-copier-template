@@ -1,0 +1,22 @@
+process {
+{% if has_slurm %}
+  executor = 'slurm'
+  queue = '{{ slurm_partition }}'
+
+  withLabel: 'process_gpu' {
+{% if slurm_gpu_partition %}
+    queue = '{{ slurm_gpu_partition }}'
+{% endif %}
+    // Cluster-specific GPU request syntax often needs local adjustment.
+    // clusterOptions = '--gres=gpu:1'
+  }
+{% else %}
+  executor = 'local'
+{% endif %}
+}
+{% if has_slurm and slurm_account %}
+
+executor {
+  account = '{{ slurm_account }}'
+}
+{% endif %}

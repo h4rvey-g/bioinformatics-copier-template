@@ -1,0 +1,130 @@
+_min_copier_version: "9.5.0"
+_subdirectory: template
+_answers_file: .copier-answers.yml
+_jinja_extensions:
+  - copier_templates_extensions.TemplateExtensionLoader
+  - extensions/context.py:PlatformContext
+
+project_name:
+  type: str
+  help: Human-readable project name.
+  placeholder: RNA-seq differential expression
+  default: Bioinformatics Analysis
+  validator: >-
+    {% if not project_name | trim %}
+    Project name cannot be empty.
+    {% endif %}
+
+project_slug:
+  type: str
+  help: Repository/project slug used in generated metadata.
+  placeholder: bioinformatics-analysis
+  default: "{{ project_name | lower | replace(' ', '-') }}"
+  validator: >-
+    {% if not (project_slug | regex_search('^[a-z0-9]+(?:-[a-z0-9]+)*$')) %}
+    Use only lowercase letters, digits, and single hyphens between words.
+    {% endif %}
+
+description:
+  type: str
+  help: Short description shown in README and Pixi metadata.
+  default: Starter template for a bioinformatics analysis workflow.
+
+author_name:
+  type: str
+  help: Primary author or team name.
+  placeholder: Jane Doe
+  default: Your Name
+
+author_email:
+  type: str
+  help: Contact email for the generated project.
+  placeholder: jane.doe@example.org
+  default: ""
+  validator: >-
+    {% if author_email and not (author_email | regex_search('^[^@\s]+@[^@\s]+\.[^@\s]+$')) %}
+    Provide a valid email address or leave this field blank.
+    {% endif %}
+
+license:
+  type: str
+  help: Choose the license string to record in the scaffold.
+  choices:
+    - MIT
+    - Apache-2.0
+    - BSD-3-Clause
+    - Proprietary/Internal
+  default: MIT
+
+has_slurm:
+  type: bool
+  help: Configure the generated project for Slurm execution?
+  default: false
+
+slurm_partition:
+  type: str
+  when: "{{ has_slurm }}"
+  help: Default Slurm partition/queue for standard jobs.
+  placeholder: compute
+  default: compute
+  validator: >-
+    {% if has_slurm and not (slurm_partition | regex_search('^[A-Za-z0-9._-]+$')) %}
+    Slurm partition must contain only letters, digits, dots, underscores, or hyphens.
+    {% endif %}
+
+slurm_gpu_partition:
+  type: str
+  when: "{{ has_slurm }}"
+  help: Optional dedicated GPU partition for `process_gpu` jobs.
+  placeholder: gpu
+  default: ""
+  validator: >-
+    {% if has_slurm and slurm_gpu_partition and not (slurm_gpu_partition | regex_search('^[A-Za-z0-9._-]+$')) %}
+    GPU partition must contain only letters, digits, dots, underscores, or hyphens.
+    {% endif %}
+
+slurm_account:
+  type: str
+  when: "{{ has_slurm }}"
+  help: Optional Slurm account/project for billing.
+  placeholder: my-lab
+  default: ""
+  validator: >-
+    {% if has_slurm and slurm_account and not (slurm_account | regex_search('^[A-Za-z0-9._-]+$')) %}
+    Slurm account must contain only letters, digits, dots, underscores, or hyphens.
+    {% endif %}
+
+pixi_platforms:
+  type: str
+  help: Pixi platforms to resolve and lock for this project.
+  multiselect: true
+  choices:
+    Linux x86_64: linux-64
+    Linux ARM64: linux-aarch64
+    macOS x86_64: osx-64
+    macOS ARM64: osx-arm64
+  default: "{{ detected_pixi_platforms | tojson }}"
+  validator: >-
+    {% if not pixi_platforms %}
+    Select at least one Pixi platform.
+    {% endif %}
+
+outdir:
+  type: str
+  help: Default directory for lightweight report-style outputs.
+  placeholder: results
+  default: results
+  validator: >-
+    {% if not (outdir | regex_search('^[A-Za-z0-9._/-]+$')) %}
+    outdir may contain letters, digits, dots, underscores, slashes, or hyphens.
+    {% endif %}
+
+workflow_name:
+  type: str
+  when: false
+  default: "{{ project_slug | replace('-', '_') }}"
+
+docs_url_slug:
+  type: str
+  when: false
+  default: "{{ project_slug }}"

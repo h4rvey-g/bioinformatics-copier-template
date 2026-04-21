@@ -1,0 +1,23 @@
+# Development
+
+## Core commands
+
+```bash
+pixi install
+pixi run config
+pixi run lint
+pixi run run
+```
+
+## Template-specific note
+
+This project was generated from a Copier template that uses a local context hook.
+If you re-render from the template, make sure Copier has `copier-templates-extensions`
+available and run with `--trust`.
+
+## Layout
+
+- `main.nf` contains the starter DSL2 workflow.
+- `conf/base.config` holds shared resource labels.
+- `conf/modules.config` is reserved for process-specific overrides.
+- `conf/{{ 'slurm' if has_slurm else 'local' }}.config` defines the selected executor.

@@ -1,0 +1,27 @@
+manifest {
+  name = '{{ project_slug }}'
+  description = '{{ description }}'
+  author = '{{ author_name }}{% if author_email %} <{{ author_email }}>{% endif %}'
+  mainScript = 'main.nf'
+  nextflowVersion = '>=24.04.0'
+}
+
+params {
+  input = "${projectDir}/assets/samplesheet.csv"
+  outdir = '{{ outdir }}'
+}
+
+includeConfig 'conf/base.config'
+includeConfig 'conf/modules.config'
+
+profiles {
+{% if has_slurm %}
+  slurm {
+    includeConfig 'conf/slurm.config'
+  }
+{% else %}
+  local {
+    includeConfig 'conf/local.config'
+  }
+{% endif %}
+}

@@ -1,0 +1,87 @@
+# {{ project_name }}
+
+{{ description }}
+
+This project was generated from a Copier template and provides a Pixi-managed Nextflow DSL2 starter workflow for bioinformatics analyses.
+
+## What this scaffold includes
+
+- Pixi environment and task management
+- Nextflow DSL2 workflow entry point
+- A generation-time execution target: **{{ 'Slurm' if has_slurm else 'local' }}**
+- Updateable Copier answers in `{{ _copier_conf.answers_file }}`
+
+## Quick start
+
+1. Install [Pixi](https://pixi.sh/) and Copier.
+2. Create and lock the environment:
+
+   ```bash
+   pixi install
+   ```
+
+   This creates `pixi.lock`, which is typically committed to Git.
+
+3. Inspect the resolved Nextflow configuration:
+
+   ```bash
+   pixi run config
+   ```
+
+4. Lint the workflow:
+
+   ```bash
+   pixi run lint
+   ```
+
+5. Run the starter workflow:
+
+   ```bash
+   pixi run run
+   ```
+
+## Execution target
+
+This project was rendered for the **{{ 'Slurm' if has_slurm else 'local' }}** executor.
+
+{% if has_slurm -%}
+### Slurm assumptions
+
+- Launch from a node where `sbatch` is available.
+- Shared filesystem paths are visible to compute nodes.
+- Adjust partition/account/GPU flags for your cluster if needed.
+{% else -%}
+### Local execution notes
+
+- The starter workflow is intended for local smoke testing and development.
+- Scale resource labels in `conf/base.config` as the workflow grows.
+{% endif %}
+
+## Repository layout
+
+- `main.nf` — workflow entry point
+- `nextflow.config` — top-level configuration and selected execution profile
+- `conf/` — base, modules, and executor-specific config
+- `assets/` — sample metadata and tiny example inputs
+- `workflows/`, `modules/`, `subworkflows/` — extension points for pipeline logic
+- `docs/` — development and execution notes
+
+## Output policy
+
+- `{{ outdir }}/` is for lightweight report-style outputs you may choose to commit.
+- `data/` is ignored by Git and intended for large inputs or bulky derived files.
+- `work/` and Nextflow runtime directories are ignored.
+
+## Git bootstrap
+
+After `pixi install`, commit the generated scaffold together with `pixi.lock` and `{{ _copier_conf.answers_file }}`.
+
+```bash
+git init
+git add .
+git commit -m "Initial commit from Copier template"
+```
+
+## Updating from the template
+
+Keep `{{ _copier_conf.answers_file }}` committed if you want to support `copier update` later.

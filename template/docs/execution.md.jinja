@@ -1,0 +1,21 @@
+# Execution
+
+This rendered project targets the **{{ 'Slurm' if has_slurm else 'local' }}** executor.
+
+## Default commands
+
+```bash
+pixi run config
+pixi run run
+```
+
+## Notes
+
+{% if has_slurm -%}
+- Ensure `sbatch` is available on the launch node.
+- Review `conf/slurm.config` for partition/account/GPU settings.
+- If your site requires GPU flags, uncomment and adapt the example `clusterOptions` line.
+{%- else -%}
+- The starter workflow is designed for smoke testing on a workstation or laptop.
+- Scale labels in `conf/base.config` as real analysis steps are added.
+{%- endif %}
