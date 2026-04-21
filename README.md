@@ -7,25 +7,40 @@ Copier template for bootstrapping a bioinformatics analysis project with:
 - generation-time executor selection: **local** or **Slurm**
 - a Git-friendly starter layout with updateable Copier answers
 
-## Requirements
+## How to use
 
 This template uses a local Copier context hook via `copier_templates_extensions`, so you must:
 
 - run Copier with `--trust`
 - have `copier-templates-extensions` installed alongside Copier
 
-A convenient one-shot invocation is:
+### Option 1: one-shot usage with `uvx` (recommended)
+
+This is the easiest way to initialize a project from the GitHub template URL:
 
 ```bash
-uvx --with copier-templates-extensions --from copier copier copy --trust /path/to/bioinformatics-copier-template my-analysis
+uvx --with copier-templates-extensions --from copier copier copy --trust \
+  https://github.com/h4rvey-g/bioinformatics-copier-template.git \
+  path/to/destination
 ```
 
-## Example renders
+### Option 2: install Copier + extensions together, then use `copier copy`
 
-### Local render
+If you already have Copier and `copier-templates-extensions` installed in the same environment, you can initialize a project directly with:
 
 ```bash
-uvx --with copier-templates-extensions --from copier copier copy --trust /path/to/bioinformatics-copier-template my-analysis
+copier copy --trust https://github.com/h4rvey-g/bioinformatics-copier-template.git path/to/destination
+```
+
+> [!NOTE]
+> Make sure `path/to/destination` is an empty directory, or a directory you intentionally want Copier to populate/update.
+
+### Local render example
+
+```bash
+uvx --with copier-templates-extensions --from copier copier copy --trust \
+  https://github.com/h4rvey-g/bioinformatics-copier-template.git \
+  my-analysis
 cd my-analysis
 pixi install
 pixi run config
@@ -33,10 +48,12 @@ pixi run lint
 pixi run run
 ```
 
-### Slurm render
+### Slurm render example
 
 ```bash
-uvx --with copier-templates-extensions --from copier copier copy --trust /path/to/bioinformatics-copier-template my-analysis \
+uvx --with copier-templates-extensions --from copier copier copy --trust \
+  https://github.com/h4rvey-g/bioinformatics-copier-template.git \
+  my-analysis \
   -d has_slurm=true \
   -d slurm_partition=compute \
   -d slurm_gpu_partition=gpu \
