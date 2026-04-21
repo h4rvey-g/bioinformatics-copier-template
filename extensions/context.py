@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import getpass
 import platform
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any
@@ -25,9 +26,10 @@ else:
 
 
 @lru_cache(maxsize=1)
-def _detect() -> tuple[str, str, list[str]]:
+def _detect() -> tuple[str, str, list[str], str]:
     system = platform.system().lower()
     machine = platform.machine().lower()
+    username = getpass.getuser()
 
     if machine in {"amd64", "x86_64", "x64"}:
         arch = "x86_64"
@@ -49,16 +51,22 @@ def _detect() -> tuple[str, str, list[str]]:
     else:
         pixi_platforms = ["linux-64"]
 
-    return system or "unknown", arch, pixi_platforms
+    return system or "unknown", arch, pixi_platforms, username or "unknown"
 
 
 class PlatformContext(BaseContextHook):
     update = False
 
     def hook(self, context: dict[str, Any]) -> dict[str, Any]:
-        detected_host_os, detected_host_arch, detected_pixi_platforms = _detect()
+        (
+            detected_host_os,
+            detected_host_arch,
+            detected_pixi_platforms,
+            detected_username,
+        ) = _detect()
         return {
             "detected_host_os": detected_host_os,
             "detected_host_arch": detected_host_arch,
             "detected_pixi_platforms": detected_pixi_platforms,
+            "detected_username": detected_username,
         }

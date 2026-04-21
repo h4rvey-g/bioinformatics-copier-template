@@ -54,14 +54,15 @@ pixi run run
 
 ### Slurm render example
 
+By default, `Primary author or team name` and `Slurm account/project for billing` are prefilled from the current username.
+
 ```bash
 uvx --with copier-templates-extensions --from copier copier copy --trust \
   https://github.com/h4rvey-g/bioinformatics-copier-template.git \
   my-analysis \
   -d has_slurm=true \
   -d slurm_partition=compute \
-  -d slurm_gpu_partition=gpu \
-  -d slurm_account=my-lab
+  -d slurm_gpu_partition=gpu
 ```
 
 For Slurm renders, the generated `pixi run run` task uses:
@@ -86,7 +87,42 @@ A rendered project includes:
 
 The starter workflow reads `assets/samplesheet.csv` and writes small summary files into `results/` for smoke testing.
 
+The rendered project also includes pre-created `data/` and `results/` directories for bulky data and lightweight reviewable outputs, respectively.
+
+## Suggested directory naming rules
+
+For generated projects, prefer these directory conventions:
+
+- keep directories shallow, ideally no more than 3 levels deep
+- avoid spaces or special characters; use `_` or `-` when separators help readability
+- prefer lowercase names for portability across systems
+- consider numeric step prefixes such as `101_raw_data/` and `102_qc/`
+- keep step prefixes aligned across code, data, and results for the same stage
+
 The rendered destination is also auto-initialized as a Git repository unless Copier is run with `--skip-tasks`.
+
+## Updating an existing generated project
+
+Copier updates work best if the generated project keeps its `.copier-answers.yml` file committed to Git.
+
+From the generated project directory, run either:
+
+```bash
+uvx --with copier-templates-extensions --from copier copier update --trust
+```
+
+or, if Copier and `copier-templates-extensions` are already installed together:
+
+```bash
+copier update --trust
+```
+
+Notes:
+
+- run the command from the root of the generated project
+- commit or stash local changes first for a cleaner update experience
+- if you do not want Copier tasks to run again during update, add `--skip-tasks`
+- review any merge conflicts, then re-run checks such as `pixi run config`, `pixi run lint`, and your workflow smoke test
 
 ## Notes for template development
 

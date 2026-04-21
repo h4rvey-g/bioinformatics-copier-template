@@ -2,7 +2,8 @@
 .nextflow/
 .nextflow*
 work/
-data/
+data/*
+!data/README.md
 *.log
 *.tmp
 .DS_Store

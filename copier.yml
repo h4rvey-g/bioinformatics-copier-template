@@ -27,16 +27,11 @@ project_slug:
     Use only lowercase letters, digits, and single hyphens between words.
     {% endif %}
 
-description:
-  type: str
-  help: Short description shown in README and Pixi metadata.
-  default: Starter template for a bioinformatics analysis workflow.
-
 author_name:
   type: str
   help: Primary author or team name.
   placeholder: Jane Doe
-  default: Your Name
+  default: "{{ detected_username }}"
 
 author_email:
   type: str
@@ -90,7 +85,7 @@ slurm_account:
   when: "{{ has_slurm }}"
   help: Optional Slurm account/project for billing.
   placeholder: my-lab
-  default: ""
+  default: "{{ detected_username }}"
   validator: >-
     {% if has_slurm and slurm_account and not (slurm_account | regex_search('^[A-Za-z0-9._-]+$')) %}
     Slurm account must contain only letters, digits, dots, underscores, or hyphens.
@@ -109,16 +104,6 @@ pixi_platforms:
   validator: >-
     {% if not pixi_platforms %}
     Select at least one Pixi platform.
-    {% endif %}
-
-outdir:
-  type: str
-  help: Default directory for lightweight report-style outputs.
-  placeholder: results
-  default: results
-  validator: >-
-    {% if not (outdir | regex_search('^[A-Za-z0-9._/-]+$')) %}
-    outdir may contain letters, digits, dots, underscores, slashes, or hyphens.
     {% endif %}
 
 workflow_name:

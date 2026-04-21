@@ -1,7 +1,5 @@
 # {{ project_name }}
 
-{{ description }}
-
 This project was generated from a Copier template and provides a Pixi-managed Nextflow DSL2 starter workflow for bioinformatics analyses.
 
 ## What this scaffold includes
@@ -67,14 +65,26 @@ This project was rendered for the **{{ 'Slurm' if has_slurm else 'local' }}** ex
 - `nextflow.config` — top-level configuration and selected execution profile
 - `conf/` — base, modules, and executor-specific config
 - `assets/` — sample metadata and tiny example inputs
+- `data/` — pre-created location for large inputs or bulky derived files
+- `results/` — pre-created location for lightweight reviewable outputs
 - `workflows/`, `modules/`, `subworkflows/` — extension points for pipeline logic
 - `docs/` — development and execution notes
 
 ## Output policy
 
-- `{{ outdir }}/` is for lightweight report-style outputs you may choose to commit.
+- `results/` is for lightweight report-style outputs you may choose to commit.
 - `data/` is ignored by Git and intended for large inputs or bulky derived files.
 - `work/` and Nextflow runtime directories are ignored.
+
+## Suggested directory naming rules
+
+For your project layout, prefer these conventions:
+
+- keep directories shallow, ideally no more than 3 levels deep
+- avoid spaces or special characters; use `_` or `-` when separators help readability
+- prefer lowercase names for portability across systems
+- consider numeric step prefixes such as `101_raw_data/` and `102_qc/`
+- keep step prefixes aligned across code, data, and results for the same stage
 
 ## Git bootstrap
 
@@ -91,3 +101,18 @@ git commit -m "Initial commit from Copier template"
 ## Updating from the template
 
 Keep `{{ _copier_conf.answers_file }}` committed if you want to support `copier update` later.
+
+From the project root, run either:
+
+```bash
+uvx --with copier-templates-extensions --from copier copier update --trust
+```
+
+or, if Copier and `copier-templates-extensions` are already installed together:
+
+```bash
+copier update --trust
+```
+
+Before updating, commit or stash local changes for a cleaner merge. If you want to skip template tasks during update, add `--skip-tasks`.
+After the update, review conflicts if any, then re-run `pixi run config`, `pixi run lint`, and your usual smoke test.

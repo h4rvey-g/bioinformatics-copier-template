@@ -1,6 +1,5 @@
 [workspace]
 name = "{{ project_slug }}"
-description = "{{ description }}"
 authors = [{% if author_email %}"{{ author_name }} <{{ author_email }}>"{% else %}"{{ author_name }}"{% endif %}]
 channels = ["conda-forge", "bioconda"]
 channel-priority = "strict"
@@ -9,6 +8,7 @@ requires-pixi = ">=0.46.0"
 
 [dependencies]
 nextflow = "*"
+python = "*"
 
 [tasks]
 run = "nextflow run . -profile {{ 'slurm' if has_slurm else 'local' }}{% if has_slurm %} -resume{% endif %}"

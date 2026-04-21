@@ -181,7 +181,6 @@ Keep prompts intentionally small and HPC-focused.
 ### Required / visible prompts
 - `project_name`
 - `project_slug`
-- `description`
 - `author_name`
 - `author_email`
 - `license`
@@ -190,7 +189,6 @@ Keep prompts intentionally small and HPC-focused.
 - `slurm_gpu_partition` (optional string; shown only when `has_slurm` is true and may be blank if the cluster uses the same partition or GPU routing is configured later)
 - `slurm_account` (optional string; shown only when `has_slurm` is true)
 - `pixi_platforms` (multiselect, auto-prefilled from detected host platform)
-- `outdir`
 
 ### Computed or hidden values
 Use `default` + `when: false` for internal values when helpful, e.g.:
@@ -200,6 +198,7 @@ Use `default` + `when: false` for internal values when helpful, e.g.:
 - `detected_host_os`
 - `detected_host_arch`
 - `detected_pixi_platforms`
+- `detected_username`
 
 ### Prompt validation
 Use Copier validators for:
@@ -212,7 +211,7 @@ Use Copier validators for:
 - `project_slug` should be explicitly asked instead of silently derived, because repository/package naming often needs manual control.
 - `license` should be a choice list (`MIT`, `Apache-2.0`, `BSD-3-Clause`, `Proprietary/Internal` etc.).
 - `has_slurm` should control whether Slurm-specific questions are shown and whether `conf/slurm.config` or `conf/local.config` is rendered.
-- `slurm_account` should default to empty string and be rendered conditionally in `slurm.config`.
+- `slurm_account` should default to the current username and be rendered conditionally in `slurm.config`.
 - `slurm_gpu_partition` should default to empty string and only affect the `process_gpu` label if provided.
 - `pixi_platforms` should be a visible multiselect question whose default is auto-generated from host OS/architecture detection, so users can keep the suggested value or override it.
 - resource tier values should be template defaults in v1, not Copier prompts.
@@ -243,7 +242,6 @@ Use a single `pixi.toml` workspace for v1.
 ### `[workspace]`
 Include:
 - `name`
-- `description`
 - `authors`
 - `channels = ["conda-forge", "bioconda"]`
 - `channel-priority = "strict"`
@@ -379,7 +377,6 @@ Use a layered configuration model.
 Responsibilities:
 - define `params` defaults such as:
   - input/sample sheet path
-  - outdir
   - profile name/help text if desired
 - include always-loaded configs:
   - `conf/base.config`
@@ -400,7 +397,6 @@ Recommended contents:
   - `process_medium`
   - `process_high`
   - `process_gpu`
-- `params.outdir`
 - `workDir = 'work'`
 - output conventions that treat `results/` as the Git-tracked location for report-like artifacts and `data/` as an ignored location for bulky files if the project later adds them
 
