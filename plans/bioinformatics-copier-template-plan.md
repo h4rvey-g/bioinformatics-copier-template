@@ -120,7 +120,7 @@ Use Copier's `_subdirectory` to separate template metadata from rendered project
     │       └── README.md
     ├── subworkflows/
     │   └── README.md
-    ├── bin/
+    ├── scripts/
     │   └── README.md
     ├── assets/
     │   └── samplesheet.csv
