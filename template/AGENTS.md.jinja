@@ -26,3 +26,12 @@
   pixi run python scripts/build_hit_package.py
   ```
 {% endif %}
+
+## Plotting
+
+- For every new or updated plot, use the shared configuration in `scripts/plot_style.py`; see `scripts/README.md` for imports and usage.
+- Call `apply_plot_style()` after any theme setup (including Seaborn) and before creating figures. Choose a `SUBPANEL_VERSIONS` entry for `figsize`.
+- Use `layout="constrained"` when creating figures; the shared config also enables it by default. Let this layout engine manage spacing rather than calling `tight_layout()` or `subplots_adjust()`.
+- **Font sizes are mandatory**, as defined in `PLOT_RC_PARAMS`; inherit them without local `fontsize`, `labelsize`, or scaling overrides unless the user explicitly requests a typography change.
+- Treat overlapping or clipped text as a layout/design or redundancy problem: rearrange panels, split pages, reduce panel density, or remove redundant wording while preserving required information and the configured font sizes. Never shrink text to make content fit.
+- Preserve the selected physical figure size, transparent PDF default, and editable vector text. Check rendered output for overlap and clipping before delivery; avoid `bbox_inches="tight"` as a workaround that changes the selected physical size.

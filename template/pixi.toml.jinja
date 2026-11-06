@@ -9,6 +9,7 @@ requires-pixi = ">=0.46.0"
 [dependencies]
 nextflow = "*"
 python = "*"
+matplotlib-base = ">=3.6,<4"
 
 [tasks]
 run = "nextflow run . -profile {{ 'slurm' if has_slurm else 'local' }}{% if has_slurm %} -resume{% endif %}"
