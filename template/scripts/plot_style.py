@@ -44,14 +44,12 @@ def mm_to_inch(mm: float) -> float:
     return mm / 25.4
 
 
+_W = {1: 42, 2: 56, 3: 85, 4: 174}   # mm; wN = width level N
+_H = {1: 40, 2: 65, 3: 110, 4: 150}  # mm; hN = height level N
 SUBPANEL_VERSIONS = {
-    "v_quarter": (mm_to_inch(42), mm_to_inch(38)),
-    "v_third": (mm_to_inch(56), mm_to_inch(48)),
-    "v_half_or_single": (mm_to_inch(85), mm_to_inch(65)),
-    "v_wide": (mm_to_inch(114), mm_to_inch(60)),
-    "v_full": (mm_to_inch(174), mm_to_inch(85)),
-    "v_half_tall": (mm_to_inch(85), mm_to_inch(110)),
-    "v_full_tall": (mm_to_inch(174), mm_to_inch(150)),
+    f"w{w}_h{h}": (mm_to_inch(_W[w]), mm_to_inch(_H[h]))
+    for w in range(1, 5)
+    for h in range(1, 5)
 }
 
 

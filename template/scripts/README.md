@@ -5,7 +5,7 @@ Put small helper scripts and project utilities here if your workflow needs them.
 ## Plotting
 
 Use `plot_style.py` for all new or updated plots. It contains the shared
-Matplotlib configuration and seven panel sizes in inches, converted from millimetres.
+Matplotlib configuration and 16 panel sizes in inches, converted from millimetres.
 
 For scripts executed by path (for example, `python scripts/my_plot.py`):
 
@@ -15,9 +15,7 @@ from plot_style import SUBPANEL_VERSIONS, apply_plot_style
 
 # Apply after any other theme/style setup, before creating figures.
 apply_plot_style()
-fig, ax = plt.subplots(
-    figsize=SUBPANEL_VERSIONS["v_half_or_single"], layout="constrained"
-)
+fig, ax = plt.subplots(figsize=SUBPANEL_VERSIONS["w3_h2"], layout="constrained")
 ax.plot([0, 1], [0, 1])
 fig.savefig("figure.pdf")
 plt.close(fig)
@@ -41,21 +39,21 @@ Keep the configured sizes and selected physical figure dimensions, then
 inspect the rendered output; `bbox_inches="tight"` changes those dimensions
 and is not a substitute for fixing the layout.
 
-| Panel | Width × height (mm) |
-| --- | --- |
-| `v_quarter` | 42 × 38 |
-| `v_third` | 56 × 48 |
-| `v_half_or_single` | 85 × 65 |
-| `v_wide` | 114 × 60 |
-| `v_full` | 174 × 85 |
-| `v_half_tall` | 85 × 110 |
-| `v_full_tall` | 174 × 150 |
+Presets are named `wN_hM` where N is the width level (1–4) and M is the height
+level (1–4). Higher numbers mean larger dimensions.
 
-Use `v_half_tall` or `v_full_tall` for heatmaps, dot plots, or multirow layouts
-that need more height. `v_quarter` and `v_third` support four or three panels
-across a 174 mm figure, with space between panels. Dimensions describe the
-whole canvas, including labels and legends. Check the target journal's figure
-requirements before submission.
+| Level | Width (mm) | Height (mm) |
+| --- | --- | --- |
+| 1 | 42 (4 per row) | 40 |
+| 2 | 56 (3 per row) | 65 |
+| 3 | 85 (2 per row) | 110 |
+| 4 | 174 (full width) | 150 |
+
+All 16 combinations are available, e.g. `w3_h2` (85 × 65 mm) or `w4_h3`
+(174 × 110 mm). Start with the smallest preset that fits the content. Use
+taller height levels (h3, h4) for heatmaps, dot plots, or multirow layouts.
+Dimensions describe the whole canvas, including labels and legends. Check the
+target journal's figure requirements before submission.
 
 Exports default to transparent PDF. PDF/PS use TrueType fonts, SVG keeps text
 as text, and rasterized layers export at 600 dpi. Use `rasterized=True` on
