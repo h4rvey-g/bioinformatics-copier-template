@@ -6,6 +6,14 @@ _jinja_extensions:
   - extensions/context.py:PlatformContext
 _tasks:
   - git init
+  # Install officecli and its pptx skill (user-level) only if missing; never fail project creation.
+  - when: "{{ install_officecli }}"
+    command: |-
+      export PATH="$HOME/.local/bin:$PATH"
+      command -v officecli >/dev/null 2>&1 || curl -fsSL https://d.officecli.ai/install.sh | bash || echo "WARNING: officecli install failed; see https://github.com/iOfficeAI/OfficeCLI" >&2
+      if command -v officecli >/dev/null 2>&1 && ! officecli skills list | grep -Eq '^ *pptx +\[installed\]'; then
+        officecli skills install && officecli skills install pptx || echo "WARNING: officecli skills install failed" >&2
+      fi
 
 project_name:
   type: str
@@ -178,6 +186,12 @@ pixi_platforms:
     {% if not pixi_platforms %}
     Select at least one Pixi platform.
     {% endif %}
+
+install_officecli:
+  type: bool
+  help: >-
+    Install `officecli` and its pptx agent skill (for building report slides) if not already detected on this system?
+  default: true
 
 workflow_name:
   type: str
