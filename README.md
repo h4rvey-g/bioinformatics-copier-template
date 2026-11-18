@@ -106,6 +106,49 @@ The starter workflow reads `assets/samplesheet.csv` and writes small summary fil
 
 The rendered project also includes pre-created `data/` and `results/` directories for bulky data and lightweight reviewable outputs, respectively.
 
+## Figure presets
+
+AI-generated plots tend to have tiny text, too many explanatory notes, and elements that look lost on an oversized canvas. Before they go into slides or a multi-panel figure, they usually need another round of resizing.
+
+Rendered projects instead ship a fixed set of canvas sizes and font sizes (`scripts/plot_style.py`). `AGENTS.md` tells the AI to pick from them rather than invent its own, so figures are readable at their final size.
+
+![Free-form AI sizing vs. the w3_h2 preset](docs/figure_presets_demo.png)
+
+*Same bar chart, same physical size (85 × 65 mm). Left: a 10 in canvas with 10 pt text squeezed down, so text is effectively ~3.3 pt. Right: the `w3_h2` preset at 6.5 / 7 / 8 pt with no rescaling. Reproduce with `python docs/figure_presets_demo.py`.*
+
+Presets are named `wN_hM` (width level N, height level M, both 1–4; 16 combinations):
+
+| Level | Width (mm) | Height (mm) |
+| --- | --- | --- |
+| 1 | 42 (4 per row) | 40 |
+| 2 | 56 (3 per row) | 65 |
+| 3 | 85 (2 per row) | 110 |
+| 4 | 174 (full width) | 150 |
+
+```python
+from plot_style import SUBPANEL_VERSIONS, apply_plot_style
+
+apply_plot_style()  # after any theme setup, before creating figures
+fig, ax = plt.subplots(figsize=SUBPANEL_VERSIONS["w3_h2"], layout="constrained")
+```
+
+See `template/scripts/README.md` for the full rules.
+
+## Report slide template
+
+Slides built by AI tend to look generic (decorative layouts, long sentences, mostly empty space). The rendered project includes a minimalist, academic-style deck, `report/report_template.pptx`, as the single reference for style and format: layouts, fonts, colors, and positions.
+
+![Report template slides: title, data table, section, two-figure, one-figure, and summary](docs/report_template_preview.png)
+
+Each template slide carries constraint rules in its **speaker notes**, for example:
+
+- title slide: project name and authors only, no subtitles or footnotes
+- section slide: the section title only, no other text
+- figure slides: every sub-section shares one slide title; each figure gets a short caption in a grey box that names what the figure is, with no detailed explanation
+- summary slide: close every section with a slide that briefly highlights its meaningful results
+
+`AGENTS.md` tells the AI to build from the template, read each slide's notes before using it, and delete the instruction notes from the final deck. When it generates slides with tools such as [OfficeCLI](https://github.com/iOfficeAI/OfficeCLI), the "AI-generated" look is reduced and the content density goes up. OfficeCLI and its `pptx` skill are installed during `copier copy` if missing (the `install_officecli` question).
+
 ## Suggested directory naming rules
 
 For generated projects, prefer these directory conventions:
